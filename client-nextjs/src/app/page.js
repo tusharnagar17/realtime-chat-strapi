@@ -9,16 +9,68 @@ import { api_url, getCurrentUser } from "@/services/auth";
 import { useRouter } from "next/navigation";
 import { createNewRoom, getRooms, getSelectedRoom } from "@/services/rooms";
 import { getRoomMessage, updateMessages } from "@/services/messages";
+import { socket } from "@/socket";
 
 export default function Home() {
   const [currentUser, setCurrentUser] = useState();
   const [allRooms, setAllRooms] = useState();
   const [selectedRoom, setSelectedRoom] = useState(null);
   const [selectedRoomData, setSelectedRoomData] = useState(null);
-  const [allUsers, setAllUsers] = useState();
+  const [onlineUsers, setOnlineUsers] = useState([]);
   const [allMessage, setAllMessage] = useState();
+  const [transport, setTransport] = useState();
+  const [isConnected, setIsConnected] = useState();
 
   const router = useRouter();
+
+  //
+  // socket.io connection
+  // establish connection
+  useEffect(() => {
+    if (socket.connected) {
+      onConnect();
+    }
+
+    function onConnect() {
+      setIsConnected(true);
+
+      setTransport(socket.io.engine.transport.name);
+
+      socket.io.engine.on("upgrade", (transport) => {
+        setTransport(transport.name);
+      });
+    }
+
+    function onDisconnect() {
+      setIsConnected(false);
+
+      setTransport("N/A");
+    }
+
+    socket.on("connect", onConnect);
+
+    socket.on("onlineUsers", (name) => {
+      setOnlineUsers(name);
+    });
+
+    socket.on("groupMessage", (data) => {
+      console.log("data.room", data.room);
+      console.log("data.message", data.message);
+      console.log("data.selectedRoom", selectedRoom);
+      if (data.room === selectedRoom) {
+        setAllMessage((prev) => [...prev, data.message]);
+      }
+    });
+
+    socket.on("disconnect", onDisconnect);
+
+    return () => {
+      socket.off("connect", onConnect);
+      socket.off("groupMessage");
+      socket.off("disconnect", onDisconnect);
+      socket.off("onlineUsers");
+    };
+  }, [selectedRoom]);
 
   // Check logged in user jwt token
   useEffect(() => {
@@ -57,6 +109,10 @@ export default function Home() {
         const res = await getSelectedRoom(selectedRoom);
         console.log("set SelectedRoomData", res.data);
         setSelectedRoomData(res.data);
+        socket.emit("joinRoom", {
+          roomId: selectedRoom,
+          username: currentUser.username,
+        });
       } catch (error) {
         console.error("Error fetching room data:", error);
       }
@@ -80,19 +136,33 @@ export default function Home() {
     fetchData();
   }, [selectedRoom]);
 
+  console.log("Online Users", onlineUsers);
+
   const createRoomFunc = async (roomName) => {
     const result = await createNewRoom(roomName, currentUser?.id);
   };
 
   const handleSendMessage = async (tempData) => {
     const res = await updateMessages(tempData);
-
+    socket.emit("roomMessage", tempData);
     console.log("updates message data", res);
+  };
+
+  const logout = async () => {
+    localStorage.setItem("token", "");
+    router.push("/");
   };
   return (
     <div className="h-[80vh] w-full">
-      <div className="flex justify-center py-6">
+      <div className="flex justify-end gap-4 max-w-5xl mx-auto items-center py-6">
         <CreateRoomForm createRoomFunc={createRoomFunc} />
+        <button
+          onClick={logout}
+          className="px-4 py-1 rounded-xl  bg-violet-400 hover:bg-white border-2 border-violet-400"
+        >
+          {" "}
+          Logout{" "}
+        </button>
       </div>
       <div
         className="p-4 h-full 
@@ -111,7 +181,7 @@ export default function Home() {
           />
         </div>
         <div className="w-[20%]">
-          <LiveUser />
+          <LiveUser onlineUsers={onlineUsers} />
         </div>
       </div>
     </div>

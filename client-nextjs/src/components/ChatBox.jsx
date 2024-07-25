@@ -22,16 +22,16 @@ const ChatBox = ({
   };
 
   return (
-    <div className="relative h-full">
+    <div className="h-full flex flex-col">
       {/* Room Name */}
       {name && (
-        <div className="bg-red-100 p-2 rounded-xl text-center font-semibold text-xl">
+        <div className="flex-[5%] bg-red-100 p-2 rounded-xl text-center font-semibold text-xl">
           {name}
         </div>
       )}
 
       {/* Room Messages */}
-      <div className="h-full">
+      <div className="h-full overflow-y-auto">
         {message ? (
           message.map((item, ind) => {
             return (
@@ -39,7 +39,7 @@ const ChatBox = ({
                 key={ind}
                 className="bg-sky-100 w-fit px-2 rounded-full py-1 my-1"
               >
-                {item.attributes.content}
+                {item.attributes?.content}
               </div>
             );
           })
@@ -51,7 +51,7 @@ const ChatBox = ({
       </div>
 
       {/* Input Message */}
-      <div className=" absolute bottom-0 w-full p-2">
+      <div className="h-[10%] flex bottom-0 w-full p-2">
         <input
           type="text"
           placeholder="Enter your message"

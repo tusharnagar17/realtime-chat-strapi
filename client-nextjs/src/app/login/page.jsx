@@ -2,14 +2,20 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { loginRequest } from "@/services/auth";
+import { useRouter } from "next/navigation";
 
 const page = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const router = useRouter();
 
   const loginForm = async (ev) => {
     ev.preventDefault();
-    await loginRequest(username, password);
+    const temp = await loginRequest(username, password);
+    console.log("temp", temp);
+    if (temp.jwt && temp.user) {
+      router.push("/");
+    }
   };
   return (
     <section className="bg-gray-50 dark:bg-gray-900">

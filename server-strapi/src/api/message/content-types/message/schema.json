@@ -1,0 +1,31 @@
+{
+  "kind": "collectionType",
+  "collectionName": "messages",
+  "info": {
+    "singularName": "message",
+    "pluralName": "messages",
+    "displayName": "message",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "content": {
+      "type": "string"
+    },
+    "roomId": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::room.room",
+      "inversedBy": "messages"
+    },
+    "sender": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "plugin::users-permissions.user",
+      "inversedBy": "all_messages"
+    }
+  }
+}

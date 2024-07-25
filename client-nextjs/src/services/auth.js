@@ -8,7 +8,7 @@ export const loginRequest = async (username, password) => {
       identifier: username,
       password: password,
     });
-    console.log("Login response", res);
+    // console.log("Login response", res);
     localStorage.setItem("token", res.data.jwt);
     return res.data;
   } catch (error) {
@@ -28,6 +28,21 @@ export const registerRequest = async (username, email, password) => {
     return res.data;
   } catch (error) {
     console.error("Register error:", error);
+    throw error;
+  }
+};
+
+export const getCurrentUser = async (token) => {
+  try {
+    const res = await axios.get(`${api_url}/api/users/me`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    console.log("response within it", res);
+    return res.data;
+  } catch (error) {
+    console.log("JwtCheck error:", error);
     throw error;
   }
 };

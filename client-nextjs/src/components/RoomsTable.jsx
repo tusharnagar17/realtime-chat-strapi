@@ -8,7 +8,7 @@ const RoomsTable = ({ rooms, setSelectedRoom }) => {
           <div
             key={ind}
             onClick={() => setSelectedRoom(item?.id)}
-            className="px-2 border bg-white my-1 py-2 rounded-lg font-semibold"
+            className="px-2 cursor-pointer border bg-white my-1 py-2 rounded-lg font-semibold"
           >
             {item.attributes.name}
           </div>

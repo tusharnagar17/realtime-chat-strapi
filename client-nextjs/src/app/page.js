@@ -50,11 +50,12 @@ export default function Home() {
     socket.on("connect", onConnect);
 
     socket.on("groupMessage", (data) => {
-      console.log("data.room", data.room);
-      console.log("data.message", data.message);
-      console.log("data.selectedRoom", selectedRoom);
+      console.log("server backend", data);
       if (data.room === selectedRoom) {
-        setAllMessage((temp) => [...temp, data.message]);
+        setAllMessage((temp) => [
+          ...temp,
+          { attributes: { content: data.message } },
+        ]);
       }
     });
 
@@ -136,8 +137,6 @@ export default function Home() {
     fetchData();
   }, [selectedRoom]);
 
-  console.log("Online Users", onlineUsers);
-
   const createRoomFunc = async (roomName) => {
     const result = await createNewRoom(roomName, currentUser?.id);
   };
@@ -154,7 +153,10 @@ export default function Home() {
   };
   return (
     <div className="h-[80vh] w-full">
-      <div className="flex justify-end gap-4 max-w-5xl mx-auto items-center py-6">
+      <div className="flex justify-between gap-4 max-w-7xl mx-auto items-center py-6">
+        <div className="text-lg font-semibold">
+          {currentUser?.username && `Username: ${currentUser.username}`}
+        </div>
         <CreateRoomForm createRoomFunc={createRoomFunc} />
         <button
           onClick={logout}

@@ -22,6 +22,7 @@ module.exports = (strapi) => {
 
     // room message
     socket.on("roomMessage", (data) => {
+      console.log("Room message event", data);
       io.to(data.roomId).emit("groupMessage", {
         room: data.roomId,
         message: data.content,

@@ -17,6 +17,22 @@ const page = () => {
       router.push("/");
     }
   };
+  const testLogin1 = async (ev) => {
+    ev.preventDefault();
+    const temp = await loginRequest("test123", "test123");
+    console.log("temp", temp);
+    if (temp.jwt && temp.user) {
+      router.push("/");
+    }
+  };
+  const testLogin2 = async (ev) => {
+    ev.preventDefault();
+    const temp = await loginRequest("test777", "test777");
+    console.log("temp", temp);
+    if (temp.jwt && temp.user) {
+      router.push("/");
+    }
+  };
   return (
     <section className="bg-gray-50 dark:bg-gray-900">
       <div className="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0">
@@ -78,6 +94,19 @@ const page = () => {
                   Sign up
                 </Link>
               </p>
+              <p>Login with temporary credentails</p>
+              <button
+                onClick={testLogin1}
+                className="w-full text-white bg-primary-600 hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800"
+              >
+                test123:test123
+              </button>
+              <button
+                onClick={testLogin2}
+                className="w-full text-white bg-primary-600 hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800"
+              >
+                test777:test777
+              </button>
             </form>
           </div>
         </div>

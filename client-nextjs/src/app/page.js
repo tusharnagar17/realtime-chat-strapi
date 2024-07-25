@@ -49,17 +49,17 @@ export default function Home() {
 
     socket.on("connect", onConnect);
 
-    socket.on("onlineUsers", (name) => {
-      setOnlineUsers(name);
-    });
-
     socket.on("groupMessage", (data) => {
       console.log("data.room", data.room);
       console.log("data.message", data.message);
       console.log("data.selectedRoom", selectedRoom);
       if (data.room === selectedRoom) {
-        setAllMessage((prev) => [...prev, data.message]);
+        setAllMessage((temp) => [...temp, data.message]);
       }
+    });
+
+    socket.on("onlineUsers", (name) => {
+      setOnlineUsers(name);
     });
 
     socket.on("disconnect", onDisconnect);
@@ -150,7 +150,7 @@ export default function Home() {
 
   const logout = async () => {
     localStorage.setItem("token", "");
-    router.push("/");
+    window.location.href = "/";
   };
   return (
     <div className="h-[80vh] w-full">
